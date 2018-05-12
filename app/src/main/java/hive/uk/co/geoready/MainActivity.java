@@ -3,6 +3,7 @@ package hive.uk.co.geoready;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
@@ -12,6 +13,10 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationAvailability;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.gson.Gson;
@@ -28,8 +33,14 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String KEY_HOME = "HOME";
     private static final String KEY_WORK = "WORK";
+    public static final String KEY_MAIN = "main";
+
+    private boolean mRequestingLocationUpdates = true;
+
+    private LocationCallback mLocationCallback;
     private FusedLocationProviderClient fusedLocationClient;
     private SharedPreferences sharedPreferences;
+    private Location mLastLocation;
     private Gson gson;
 
     private OnSuccessListener<Location> goingHome = new OnSuccessListener<Location>() {
@@ -37,8 +48,11 @@ public class MainActivity extends AppCompatActivity {
         public void onSuccess(Location location) {
             if (location != null) {
                 SharedPreferences.Editor edit = sharedPreferences.edit();
-                edit.putString(KEY_HOME, getLocationAsString(location))
+                edit.putString(KEY_WORK, getLocationAsString(location))
                         .apply();
+
+                Intent intent = new Intent(MainActivity.this, GoingHomeActivity.class);
+                startActivity(intent);
             }
         }
     };
@@ -52,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         public void onSuccess(Location location) {
             if (location != null) {
                 SharedPreferences.Editor edit = sharedPreferences.edit();
-                edit.putString(KEY_WORK, getLocationAsString(location))
+                edit.putString(KEY_HOME, getLocationAsString(location))
                         .apply();
             }
         }
@@ -66,18 +80,55 @@ public class MainActivity extends AppCompatActivity {
 
         Button btnGoingToWork = findViewById(R.id.btn_leaving);
         Button btnGoingHome = findViewById(R.id.btn_home);
+        Button btnStats = findViewById(R.id.btn_stats);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        sharedPreferences = getSharedPreferences("main", MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences(KEY_MAIN, MODE_PRIVATE);
         gson = new Gson();
+        mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+                mLastLocation = locationResult.getLastLocation();
+            }
 
-        btnGoingToWork.setOnClickListener(v -> MainActivityPermissionsDispatcher.getLastKnownLocationWithPermissionCheck(this, goingToWork));
+            @Override
+            public void onLocationAvailability(LocationAvailability locationAvailability) {
+                super.onLocationAvailability(locationAvailability);
+            }
+        };
 
-        btnGoingHome.setOnClickListener(v -> MainActivityPermissionsDispatcher.getLastKnownLocationWithPermissionCheck(this, goingHome));
+        btnGoingToWork.setOnClickListener(v -> goingToWork.onSuccess(mLastLocation));
+        btnGoingHome.setOnClickListener(v -> goingHome.onSuccess(mLastLocation));
+        btnStats.setOnClickListener(v -> {
+            Intent intent = new Intent(this, StatsActivity.class);
+            startActivity(intent);
+        });
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    protected void onResume() {
+        super.onResume();
+        if (mRequestingLocationUpdates) {
+            MainActivityPermissionsDispatcher.startLocationUpdatesWithPermissionCheck(this);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        fusedLocationClient.removeLocationUpdates(mLocationCallback);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mRequestingLocationUpdates = false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // NOTE: delegate the permission handling to generated method
         MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
@@ -103,9 +154,19 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "Never", Toast.LENGTH_SHORT).show();
     }
 
+    @SuppressLint("MissingPermission")
     @NeedsPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-    void getLastKnownLocation(OnSuccessListener<Location> onSuccessListener) {
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, onSuccessListener);
+    void startLocationUpdates() {
+        fusedLocationClient.requestLocationUpdates(createLocationRequest(),
+                mLocationCallback,
+                null /* Looper */);
+    }
+
+    protected LocationRequest createLocationRequest() {
+        LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(5000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        return locationRequest;
     }
 }

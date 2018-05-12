@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">GeoReady</string>
+    <string name="title_activity_stats">StatsActivity</string>
+    <string-array name="travel_modes">
+        <item>driving</item>
+        <item>walking</item>
+        <item>bicycling</item>
+        <item>transit</item>
+    </string-array>
+
+    <string-array name="transit_mode">
+        <item>Choose option</item>
+        <item>bus</item>
+        <item>subway</item>
+        <item>train</item>
+        <item>tram</item>
+        <item>rail</item>
+    </string-array>
 </resources>

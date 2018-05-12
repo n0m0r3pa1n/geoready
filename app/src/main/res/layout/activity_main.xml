@@ -16,6 +16,7 @@
         android:layout_marginStart="8dp"
         android:text="Going Home"
         tools:layout_editor_absoluteY="231dp"/>
+
     <Button
         android:id="@+id/btn_leaving"
         android:layout_marginTop="32dp"
@@ -25,7 +26,17 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:text="I am leaving"
-        tools:layout_editor_absoluteY="81dp"/>
+        android:text="I am leaving" />
+
+    <Button
+        android:id="@+id/btn_stats"
+        android:layout_marginTop="32dp"
+        android:layout_below="@+id/btn_leaving"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="Stats" />
 
 </RelativeLayout>

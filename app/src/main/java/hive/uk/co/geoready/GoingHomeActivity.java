@@ -1,0 +1,161 @@
+package hive.uk.co.geoready;
+
+import android.content.SharedPreferences;
+import android.location.Location;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+public class GoingHomeActivity extends AppCompatActivity {
+    public static final String TAG = GoingHomeActivity.class.getSimpleName();
+
+    private static final String KEY_MAIN = "main";
+    private static final String KEY_HOME = "HOME";
+    private static final String KEY_WORK = "WORK";
+
+    private TextView tvExpectedTime;
+    private Button btnGoHome;
+    private SharedPreferences sharedPreferences;
+    private Location homeLocation, workLocation;
+    private MapsApiService mapsApiService;
+    private String mTravelMode;
+    private String mTransitMode;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_going_home);
+
+        sharedPreferences = getSharedPreferences(KEY_MAIN, MODE_PRIVATE);
+
+        tvExpectedTime = findViewById(R.id.tv_time);
+        btnGoHome = findViewById(R.id.btn_go_home);
+        btnGoHome.setOnClickListener(v -> getLocationExpectedTime(mTravelMode, mTransitMode));
+
+        setupRetrofit();
+        setupLocations();
+        setupSpinners();
+    }
+
+    private void setupSpinners() {
+        Spinner spTravelMode = findViewById(R.id.sp_travel_mode);
+        Spinner spTransitMode = findViewById(R.id.sp_transit_mode);
+        spTransitMode.setEnabled(false);
+
+        ArrayAdapter<CharSequence> travelModesArray = ArrayAdapter.createFromResource(this, R.array.travel_modes, android.R.layout.simple_spinner_item);
+        travelModesArray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spTravelMode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 3) {
+                    spTransitMode.setEnabled(true);
+                } else {
+                    spTransitMode.setEnabled(false);
+                    String[] stringArray = getResources().getStringArray(R.array.travel_modes);
+                    mTravelMode = stringArray[position];
+                    mTransitMode = "";
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        spTravelMode.setAdapter(travelModesArray);
+
+
+        ArrayAdapter<CharSequence> transitModesArray = ArrayAdapter.createFromResource(this, R.array.transit_mode, android.R.layout.simple_spinner_item);
+        transitModesArray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spTransitMode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String[] stringArray = getResources().getStringArray(R.array.transit_mode);
+                mTravelMode = "transit";
+                if (position == 0) {
+                    mTransitMode = "";
+                } else {
+                    mTransitMode = stringArray[position];
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        spTransitMode.setAdapter(transitModesArray);
+
+    }
+
+    private void setupLocations() {
+        String homeLocationString = sharedPreferences.getString(KEY_HOME, "");
+        String workLocationString = sharedPreferences.getString(KEY_WORK, "");
+
+        Gson gson = new Gson();
+
+        homeLocation = gson.fromJson(homeLocationString, Location.class);
+        workLocation = gson.fromJson(workLocationString, Location.class);
+    }
+
+    private void setupRetrofit() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://maps.googleapis.com/maps/api/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        mapsApiService = retrofit.create(MapsApiService.class);
+    }
+
+    private void getLocationExpectedTime(String travelMode, String transitMode) {
+        String origin = String.format("%s,%s", workLocation.getLatitude(), workLocation.getLongitude());
+        String destination = String.format("%s,%s", homeLocation.getLatitude(), homeLocation.getLongitude());
+
+        Call<JsonElement> timeRequest = mapsApiService.getTravelTime("imperial", origin, destination, travelMode, transitMode);
+        timeRequest.enqueue(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                JsonObject durationObject = response.body()
+                        .getAsJsonObject()
+                        .get("rows")
+                        .getAsJsonArray()
+                        .get(0)
+                        .getAsJsonObject()
+                        .get("elements")
+                        .getAsJsonArray()
+                        .get(0)
+                        .getAsJsonObject()
+                        .get("duration")
+                        .getAsJsonObject();
+
+                String durationText = durationObject
+                        .get("text")
+                        .getAsString();
+
+                int durationValue = durationObject.get("value").getAsInt();
+
+                tvExpectedTime.setText(durationText + " " + durationValue);
+            }
+
+            @Override
+            public void onFailure(Call<JsonElement> call, Throwable t) {
+
+            }
+        });
+    }
+}
