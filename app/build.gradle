@@ -29,6 +29,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
     implementation 'net.danlew:android.joda:2.9.9.4'
+    implementation 'com.jjoe64:graphview:4.2.2'
 
     implementation("com.github.hotchemi:permissionsdispatcher:3.2.0") {
         // if you don't use android.app.Fragment you can exclude support for them

@@ -54,7 +54,7 @@ public class DeviceScheduleFragment extends Fragment {
         Date sunday = now.withDayOfWeek(DateTimeConstants.SUNDAY).toDate();
 
         LocalTime startTime = LocalTime.now().withFieldAdded(DurationFieldType.hours(), 1);
-        LocalTime endTime = LocalTime.now().withFieldAdded(DurationFieldType.hours(), 4);
+        LocalTime endTime = LocalTime.now().withFieldAdded(DurationFieldType.hours(), 5);
         mSchedule.add(new Day(LocalDate.now().dayOfWeek().getAsText(Locale.US), monday, startTime, endTime));
 //        mSchedule.add(new Day("Tuesday", tuesday, startTime, endTime));
 //        mSchedule.add(new Day("Wednesday", wednesday, startTime, endTime));

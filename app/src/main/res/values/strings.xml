@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">GeoReady</string>
-    <string name="title_activity_stats">StatsActivity</string>
+    <string name="title_activity_stats">Stats</string>
+    <string name="title_activity_home">Going Home</string>
     <string-array name="travel_modes">
         <item>driving</item>
         <item>walking</item>

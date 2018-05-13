@@ -17,8 +17,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.joda.time.LocalDateTime;
+import org.joda.time.Minutes;
 
-import hive.uk.co.geoready.devices.Day;
 import hive.uk.co.geoready.schedule.DeviceScheduleFragment;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,6 +33,7 @@ public class GoingHomeActivity extends AppCompatActivity {
     private static final String KEY_HOME = "HOME";
     private static final String KEY_WORK = "WORK";
     private static final String KEY_TARGET_TEMP = "TARGET_TEMP";
+    private static final String KEY_SAVED = "SAVED";
 
     private Button btnGoHome;
     private TextView tvTime;
@@ -49,6 +50,9 @@ public class GoingHomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_going_home);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         sharedPreferences = getSharedPreferences(KEY_MAIN, MODE_PRIVATE);
 
@@ -190,7 +194,15 @@ public class GoingHomeActivity extends AppCompatActivity {
                                         minutesToHeat + " minutes");
 
                                 if (minutesToHeat < travelTimeInMinutes) {
-                                    String startTime = LocalDateTime.now().plusMinutes(travelTimeInMinutes).minusMinutes(minutesToHeat).toString("E HH:mm");
+
+                                    LocalDateTime updatedStartTime = LocalDateTime.now().plusMinutes(travelTimeInMinutes).minusMinutes(minutesToHeat);
+
+                                    int savedMinutes =
+                                            Minutes.minutesBetween(updatedStartTime.toDateTime(), mDeviceScheduleFragment.getCurrentScheduleTime().getStartTime().toDateTimeToday())
+                                            .getMinutes();
+                                    sharedPreferences.edit().putInt(KEY_SAVED, Math.abs(savedMinutes)).apply();
+
+                                    String startTime = updatedStartTime.toString("E HH:mm");
                                     mDeviceScheduleFragment.setSuggestedTime(startTime, "--");
                                     mDeviceScheduleFragment.hideTargetTempUnreachable();
                                     mDeviceScheduleFragment.showSuggestedTime();
@@ -214,5 +226,11 @@ public class GoingHomeActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }

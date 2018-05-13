@@ -8,6 +8,8 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.NumberPicker;
@@ -22,6 +24,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.gson.Gson;
 
+import hive.uk.co.geoready.stats.StatsActivity;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
 import permissions.dispatcher.OnPermissionDenied;
@@ -70,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences.Editor edit = sharedPreferences.edit();
                 edit.putString(KEY_HOME, getLocationAsString(location))
                         .apply();
+
+                Snackbar.make(findViewById(R.id.container_root), "Saved your Home location!", Snackbar.LENGTH_LONG).show();
             }
         }
     };
@@ -84,8 +89,8 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences(KEY_MAIN, MODE_PRIVATE);
         gson = new Gson();
 
-        Button btnGoingToWork = findViewById(R.id.btn_leaving);
-        Button btnGoingHome = findViewById(R.id.btn_home);
+        FloatingActionButton btnGoingToWork = findViewById(R.id.btn_leaving);
+        FloatingActionButton btnGoingHome = findViewById(R.id.btn_home);
         Button btnStats = findViewById(R.id.btn_stats);
         NumberPicker npTargetTemp = findViewById(R.id.np_target_temperature);
         npTargetTemp.setMinValue(10);
