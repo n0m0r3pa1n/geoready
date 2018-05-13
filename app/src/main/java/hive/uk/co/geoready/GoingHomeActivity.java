@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import hive.uk.co.geoready.schedule.DeviceScheduleFragment;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -28,8 +29,9 @@ public class GoingHomeActivity extends AppCompatActivity {
     private static final String KEY_HOME = "HOME";
     private static final String KEY_WORK = "WORK";
 
-    private TextView tvExpectedTime;
     private Button btnGoHome;
+    private TextView tvTime;
+    private TextView tvHint;
     private SharedPreferences sharedPreferences;
     private Location homeLocation, workLocation;
     private MapsApiService mapsApiService;
@@ -43,13 +45,20 @@ public class GoingHomeActivity extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences(KEY_MAIN, MODE_PRIVATE);
 
-        tvExpectedTime = findViewById(R.id.tv_time);
+        tvTime = findViewById(R.id.tv_time);
+        tvHint = findViewById(R.id.tv_hint);
         btnGoHome = findViewById(R.id.btn_go_home);
         btnGoHome.setOnClickListener(v -> getLocationExpectedTime(mTravelMode, mTransitMode));
 
         setupRetrofit();
         setupLocations();
         setupSpinners();
+
+        getLocationExpectedTime("driving", "");
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.container, new DeviceScheduleFragment(), DeviceScheduleFragment.TAG)
+                .commit();
     }
 
     private void setupSpinners() {
@@ -130,8 +139,10 @@ public class GoingHomeActivity extends AppCompatActivity {
         timeRequest.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
-                JsonObject durationObject = response.body()
-                        .getAsJsonObject()
+                JsonObject responseObject = response.body()
+                        .getAsJsonObject();
+
+                JsonObject durationObject = responseObject
                         .get("rows")
                         .getAsJsonArray()
                         .get(0)
@@ -143,13 +154,18 @@ public class GoingHomeActivity extends AppCompatActivity {
                         .get("duration")
                         .getAsJsonObject();
 
+                String destinationAddress = responseObject.get("destination_addresses").getAsJsonArray().get(0).getAsString();
+                String originAddress = responseObject.get("origin_addresses").getAsJsonArray().get(0).getAsString();
+                tvHint.setText(String.format("How do you plan to go from %s to %s?", originAddress, destinationAddress));
+
                 String durationText = durationObject
                         .get("text")
                         .getAsString();
 
                 int durationValue = durationObject.get("value").getAsInt();
 
-                tvExpectedTime.setText(durationText + " " + durationValue);
+                tvTime.setText("It will take you approximately " + durationText);
+
             }
 
             @Override

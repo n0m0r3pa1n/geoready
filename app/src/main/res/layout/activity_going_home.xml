@@ -6,9 +6,21 @@
     android:layout_height="match_parent"
     tools:context=".GoingHomeActivity">
 
+
+    <TextView
+        android:id="@+id/tv_hint"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="4dp"/>
+
     <LinearLayout
+        android:id="@+id/search_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/tv_hint"
+        android:layout_marginTop="4dp"
         android:orientation="horizontal">
 
         <Spinner
@@ -25,17 +37,35 @@
 
         <Button
             android:id="@+id/btn_go_home"
-            android:text="Go Home"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:text="Enter"/>
 
     </LinearLayout>
+
+    <View
+        android:id="@+id/separator"
+        android:layout_below="@id/search_container"
+        android:layout_marginTop="4dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#CCEECC"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp" />
 
     <TextView
         android:id="@+id/tv_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="Expected time"/>
+        android:layout_marginTop="4dp"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_below="@id/separator"
+        android:layout_centerHorizontal="true"/>
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/tv_time"/>
 
 </RelativeLayout>
