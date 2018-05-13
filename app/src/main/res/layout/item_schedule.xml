@@ -7,10 +7,11 @@
 
     <TextView
         android:id="@+id/tv_name"
-        style="@style/Base.TextAppearance.AppCompat.Large"
+        android:layout_marginTop="8dp"
+        style="@style/Base.TextAppearance.AppCompat.SearchResult"
+        android:paddingLeft="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         tool:text="Monday"/>
 
     <LinearLayout
@@ -28,13 +29,14 @@
             android:orientation="vertical">
 
             <TextView
+                style="@style/TextAppearance.AppCompat.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Start time"/>
 
             <TextView
                 android:id="@+id/tv_start_date"
-                style="@style/TextAppearance.AppCompat.Body1"
+                style="@style/TextAppearance.AppCompat.Large"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -51,13 +53,14 @@
             android:orientation="vertical">
 
             <TextView
+                style="@style/TextAppearance.AppCompat.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="End time"/>
 
             <TextView
                 android:id="@+id/tv_end_date"
-                style="@style/TextAppearance.AppCompat.Body1"
+                style="@style/TextAppearance.AppCompat.Large"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"

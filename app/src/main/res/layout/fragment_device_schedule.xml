@@ -45,14 +45,16 @@
             android:orientation="vertical">
 
             <TextView
+                style="@style/TextAppearance.AppCompat.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Start time"/>
 
             <TextView
                 android:id="@+id/tv_suggested_start_date"
-                style="@style/TextAppearance.AppCompat.Body1"
+                style="@style/TextAppearance.AppCompat.Large"
                 android:layout_width="match_parent"
+                android:textColor="@android:color/holo_red_light"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
@@ -69,13 +71,14 @@
             android:orientation="vertical">
 
             <TextView
+                style="@style/TextAppearance.AppCompat.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="End time"/>
 
             <TextView
                 android:id="@+id/tv_suggested_end_date"
-                style="@style/TextAppearance.AppCompat.Body1"
+                style="@style/TextAppearance.AppCompat.Large"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -89,8 +92,12 @@
         android:visibility="invisible"
         android:layout_below="@+id/tv_suggested_schedule"
         android:textColor="@android:color/holo_red_dark"
+        android:gravity="center"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         android:text="Sorry! :( Target temperature cannot be reached in the given time!"
         android:padding="8dp"
+        style="@style/TextAppearance.AppCompat.Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 

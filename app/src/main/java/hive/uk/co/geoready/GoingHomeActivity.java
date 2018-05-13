@@ -37,7 +37,9 @@ public class GoingHomeActivity extends AppCompatActivity {
 
     private Button btnGoHome;
     private TextView tvTime;
-    private TextView tvHint;
+    private TextView tvHeatTime;
+    private TextView tvHomeAddress;
+    private TextView tvWorkAddress;
     private SharedPreferences sharedPreferences;
     private Location homeLocation, workLocation;
     private MapsApiService mapsApiService;
@@ -56,8 +58,10 @@ public class GoingHomeActivity extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences(KEY_MAIN, MODE_PRIVATE);
 
-        tvTime = findViewById(R.id.tv_time);
-        tvHint = findViewById(R.id.tv_hint);
+        tvTime = findViewById(R.id.tv_minutes_count);
+        tvHeatTime = findViewById(R.id.tv_heating_minutes_count);
+        tvHomeAddress = findViewById(R.id.tv_home_adddress);
+        tvWorkAddress = findViewById(R.id.tv_work_address);
         btnGoHome = findViewById(R.id.btn_go_home);
         btnGoHome.setOnClickListener(v -> getLocationExpectedTime(mTravelMode, mTransitMode));
 
@@ -175,7 +179,8 @@ public class GoingHomeActivity extends AppCompatActivity {
 
                 String destinationAddress = responseObject.get("destination_addresses").getAsJsonArray().get(0).getAsString();
                 String originAddress = responseObject.get("origin_addresses").getAsJsonArray().get(0).getAsString();
-                tvHint.setText(String.format("How do you plan to go from %s to %s?", originAddress, destinationAddress));
+                tvHomeAddress.setText(originAddress);
+                tvWorkAddress.setText(destinationAddress);
 
                 String durationText = durationObject
                         .get("text")
@@ -190,12 +195,15 @@ public class GoingHomeActivity extends AppCompatActivity {
                             @Override
                             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                                 int minutesToHeat = response.body().getAsJsonObject().get("minutes").getAsInt();
-                                tvTime.setText("Travel will take you around " + durationText + "\n\nYour home can be heated up to " + targetTemp + " degress in " +
-                                        minutesToHeat + " minutes");
+                                tvTime.setText(durationText);
+                                tvHeatTime.setText(minutesToHeat + "");
 
                                 if (minutesToHeat < travelTimeInMinutes) {
 
-                                    LocalDateTime updatedStartTime = LocalDateTime.now().plusMinutes(travelTimeInMinutes).minusMinutes(minutesToHeat);
+                                    int minutesToStartHeating = travelTimeInMinutes - minutesToHeat;
+                                    LocalDateTime updatedStartTime = LocalDateTime.now()
+                                            .plusHours(1)
+                                            .plusMinutes(minutesToStartHeating);
 
                                     int savedMinutes =
                                             Minutes.minutesBetween(updatedStartTime.toDateTime(), mDeviceScheduleFragment.getCurrentScheduleTime().getStartTime().toDateTimeToday())
