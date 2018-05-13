@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-    <ImageView
-        android:id="@+id/icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/device_render_thermostat_slt4"/>
+                android:layout_height="match_parent" xmlns:tools="http://schemas.android.com/tools">
 
     <TextView
         android:id="@+id/tv_current_schedule"
@@ -34,5 +27,72 @@
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:text="Suggested Schedule"/>
+
+    <LinearLayout
+        android:layout_below="@+id/tv_suggested_schedule"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/container_start_date"
+            android:layout_width="0dp"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start time"/>
+
+            <TextView
+                android:id="@+id/tv_suggested_start_date"
+                style="@style/TextAppearance.AppCompat.Body1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                tools:text="test"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/container_end_date"
+            android:layout_width="0dp"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="End time"/>
+
+            <TextView
+                android:id="@+id/tv_suggested_end_date"
+                style="@style/TextAppearance.AppCompat.Body1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                tools:text="test"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_not_reachable"
+        android:visibility="invisible"
+        android:layout_below="@+id/tv_suggested_schedule"
+        android:textColor="@android:color/holo_red_dark"
+        android:text="Sorry! :( Target temperature cannot be reached in the given time!"
+        android:padding="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
 
 </RelativeLayout>

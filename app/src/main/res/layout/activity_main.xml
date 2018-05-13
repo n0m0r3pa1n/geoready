@@ -6,12 +6,90 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-   <Button
-        android:id="@+id/btn_home"
-        android:layout_alignParentTop="true"
+    <TextView
+        android:id="@+id/tv_heating"
+        style="@style/TextAppearance.AppCompat.Display1"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="4dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="My Heating Device"/>
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_below="@id/tv_heating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/device_render_thermostat_slt4"/>
+
+    <LinearLayout
+        android:id="@+id/container_controls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/icon"
+        android:layout_margin="10px"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+            <TextView
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Internal Temp"/>
+
+            <TextView
+                android:id="@+id/tv_internal_temp"
+                style="@style/TextAppearance.AppCompat.Large"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="18"/>
+        </LinearLayout>
+
+
+        <NumberPicker
+            android:id="@+id/np_target_temperature"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+        />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center_vertical"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+            <TextView
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="External Temp"/>
+
+            <TextView
+                android:id="@+id/tv_external_temp"
+                style="@style/TextAppearance.AppCompat.Large"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="15"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/btn_home"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/container_controls"
+        android:layout_centerHorizontal="true"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:text="Going Home"
@@ -19,24 +97,24 @@
 
     <Button
         android:id="@+id/btn_leaving"
-        android:layout_marginTop="32dp"
-        android:layout_below="@+id/btn_home"
-        android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_home"
+        android:layout_centerHorizontal="true"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:text="I am leaving" />
+        android:layout_marginTop="10dp"
+        android:text="I am leaving"/>
 
     <Button
         android:id="@+id/btn_stats"
-        android:layout_marginTop="32dp"
-        android:layout_below="@+id/btn_leaving"
-        android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_leaving"
+        android:layout_centerHorizontal="true"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:text="Stats" />
+        android:layout_marginTop="10dp"
+        android:text="Stats"/>
 
 </RelativeLayout>

@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,6 +16,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import org.joda.time.LocalDateTime;
+
+import hive.uk.co.geoready.devices.Day;
 import hive.uk.co.geoready.schedule.DeviceScheduleFragment;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,6 +32,7 @@ public class GoingHomeActivity extends AppCompatActivity {
     private static final String KEY_MAIN = "main";
     private static final String KEY_HOME = "HOME";
     private static final String KEY_WORK = "WORK";
+    private static final String KEY_TARGET_TEMP = "TARGET_TEMP";
 
     private Button btnGoHome;
     private TextView tvTime;
@@ -35,8 +40,10 @@ public class GoingHomeActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private Location homeLocation, workLocation;
     private MapsApiService mapsApiService;
+    private TemperatureApi temperatureApi;
     private String mTravelMode;
     private String mTransitMode;
+    private DeviceScheduleFragment mDeviceScheduleFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +63,9 @@ public class GoingHomeActivity extends AppCompatActivity {
 
         getLocationExpectedTime("driving", "");
 
+        mDeviceScheduleFragment = new DeviceScheduleFragment();
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.container, new DeviceScheduleFragment(), DeviceScheduleFragment.TAG)
+                .add(R.id.container, mDeviceScheduleFragment, DeviceScheduleFragment.TAG)
                 .commit();
     }
 
@@ -129,6 +137,13 @@ public class GoingHomeActivity extends AppCompatActivity {
                 .build();
 
         mapsApiService = retrofit.create(MapsApiService.class);
+
+        Retrofit retrofitLocal = new Retrofit.Builder()
+                .baseUrl("http://10.0.2.2:5000/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        temperatureApi = retrofitLocal.create(TemperatureApi.class);
     }
 
     private void getLocationExpectedTime(String travelMode, String transitMode) {
@@ -162,9 +177,35 @@ public class GoingHomeActivity extends AppCompatActivity {
                         .get("text")
                         .getAsString();
 
-                int durationValue = durationObject.get("value").getAsInt();
+                int travelTimeInMinutes = durationObject.get("value").getAsInt() / 60;
+                Log.d(TAG, "onResponse: " + travelTimeInMinutes);
 
-                tvTime.setText("It will take you approximately " + durationText);
+                int targetTemp = sharedPreferences.getInt(KEY_TARGET_TEMP, 20);
+                temperatureApi.getMinutesToHeat(targetTemp).enqueue(
+                        new Callback<JsonElement>() {
+                            @Override
+                            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                                int minutesToHeat = response.body().getAsJsonObject().get("minutes").getAsInt();
+                                tvTime.setText("Travel will take you around " + durationText + "\n\nYour home can be heated up to " + targetTemp + " degress in " +
+                                        minutesToHeat + " minutes");
+
+                                if (minutesToHeat < travelTimeInMinutes) {
+                                    String startTime = LocalDateTime.now().plusMinutes(travelTimeInMinutes).minusMinutes(minutesToHeat).toString("E HH:mm");
+                                    mDeviceScheduleFragment.setSuggestedTime(startTime, "--");
+                                    mDeviceScheduleFragment.hideTargetTempUnreachable();
+                                    mDeviceScheduleFragment.showSuggestedTime();
+                                } else {
+                                    mDeviceScheduleFragment.hideSuggestedTime();
+                                    mDeviceScheduleFragment.showTargetTempUnreachable();
+                                }
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<JsonElement> call, Throwable t) {
+
+                            }
+                        });
 
             }
 

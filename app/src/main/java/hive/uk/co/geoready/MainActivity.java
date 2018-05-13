@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
+import android.widget.NumberPicker;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String KEY_HOME = "HOME";
     private static final String KEY_WORK = "WORK";
+    private static final String KEY_TARGET_TEMP = "TARGET_TEMP";
     public static final String KEY_MAIN = "main";
 
     private boolean mRequestingLocationUpdates = true;
@@ -78,13 +80,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button btnGoingToWork = findViewById(R.id.btn_leaving);
-        Button btnGoingHome = findViewById(R.id.btn_home);
-        Button btnStats = findViewById(R.id.btn_stats);
-
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         sharedPreferences = getSharedPreferences(KEY_MAIN, MODE_PRIVATE);
         gson = new Gson();
+
+        Button btnGoingToWork = findViewById(R.id.btn_leaving);
+        Button btnGoingHome = findViewById(R.id.btn_home);
+        Button btnStats = findViewById(R.id.btn_stats);
+        NumberPicker npTargetTemp = findViewById(R.id.np_target_temperature);
+        npTargetTemp.setMinValue(10);
+        npTargetTemp.setMaxValue(30);
+        npTargetTemp.setValue(sharedPreferences.getInt(KEY_TARGET_TEMP, 20));
+        npTargetTemp.setOnValueChangedListener((picker, oldVal, newVal) -> {
+            if (oldVal != newVal) {
+                sharedPreferences.edit().putInt(KEY_TARGET_TEMP, newVal).apply();
+            }
+        });
+
         mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
