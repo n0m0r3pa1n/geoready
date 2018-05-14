@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences.Editor edit = sharedPreferences.edit();
                 edit.putString(KEY_WORK, getLocationAsString(location))
                         .apply();
-
+                pauseFusedLocation();
                 Intent intent = new Intent(MainActivity.this, GoingHomeActivity.class);
                 startActivity(intent);
             }
@@ -134,6 +134,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        pauseFusedLocation();
+    }
+
+    private void pauseFusedLocation() {
         fusedLocationClient.removeLocationUpdates(mLocationCallback);
     }
 
