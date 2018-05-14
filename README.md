@@ -60,6 +60,8 @@ turn on your heating. So if you are going to be late with 1 hour because of the 
 
 #### Screenshots
 
-![MainScreen](./screens/Screenshot_1526292329.png =576x324)
-![StatsScreen](./screens/Screenshot_1526292334.png =576x324)
-![GoingHomeScreen](./screens/Screenshot_1526292339.png =576x324)
+<img src="./screens/Screenshot_1526292329.png" width="250"> <img src="./screens/Screenshot_1526292334.png" width="250"> <img src="./screens/Screenshot_1526292339.png" width="250">
+
+## More Info
+
+[LINK](https://drive.google.com/open?id=1OCKvlg3PwZJ6xebZ3fZCCJj0jY5DcStc)
